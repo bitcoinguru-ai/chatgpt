@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ChatGPT Integration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #chat-container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      width: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+    #chat-box {
+      height: 400px;
+      overflow-y: scroll;
+      border-bottom: 1px solid #ccc;
+      padding: 10px;
+    }
+    #chat-controls {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+    #message-input {
+      flex-grow: 1;
+      border: none;
+      padding: 10px;
+      outline: none;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="chat-container">
+    <div id="chat-box">
+      <!-- Chat messages will appear here -->
+    </div>
+    <div id="chat-controls">
+      <input type="text" id="message-input">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const messageInput = document.getElementById("message-input");
+      const message = messageInput.value;
+      const chatBox = document.getElementById("chat-box");
+
+      const userMessage = document.createElement("div");
+      userMessage.innerText = "You: " + message;
+      chatBox.appendChild(userMessage);
+
+      try {
+        const response = await fetch('/sendMessage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+        const gptResponse = data.message;
+
+        const gptMessage = document.createElement("div");
+        gptMessage.innerText = "ChatGPT: " + gptResponse;
+        chatBox.appendChild(gptMessage);
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (error) {
+        console.error('Error:', error);
+      }
+
+      messageInput.value = "";
+    }
+  </script>
+
+</body>
+</html>
